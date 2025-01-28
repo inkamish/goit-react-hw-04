@@ -17,6 +17,7 @@ function App() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async (newQuery) => {
     setQuery(newQuery);
@@ -25,12 +26,15 @@ function App() {
     setError(false);
     setLoading(true);
     setHasMore(true);
+    setHasSearched(true);
 
     try {
       const data = await fetchImages(newQuery, 1);
       setImages(data.results);
 
-      if (data.total_pages <= 1) {
+      if (data.results.length === 0) {
+        setHasMore(false);
+      } else if (data.total_pages <= 1) {
         setHasMore(false);
       }
     } catch {
@@ -41,15 +45,18 @@ function App() {
   };
 
   const loadMore = async () => {
+    if (!hasMore) return;
+
     setLoading(true);
 
     try {
       const nextPage = page + 1;
       const data = await fetchImages(query, nextPage);
+
       setImages((prevImages) => [...prevImages, ...data.results]);
       setPage(nextPage);
 
-      if (nextPage >= data.total_pages) {
+      if (data.results.length === 0 || nextPage >= data.total_pages) {
         setHasMore(false);
       }
     } catch {
@@ -77,7 +84,11 @@ function App() {
         <ImageGallery images={images} onImageClick={handleImageClick} />
       )}
 
-      {!loading && images.length === 0 && <ErrorMessage />}
+      {!loading && hasSearched && images.length === 0 && !error && (
+        <p>No results found. Try searching for something else!</p>
+      )}
+
+      {error && <ErrorMessage />}
       {images.length > 0 && !loading && hasMore && (
         <LoadMoreBtn onClick={loadMore} />
       )}

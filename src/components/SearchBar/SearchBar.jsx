@@ -38,7 +38,12 @@ const SearchBar = ({ onSearch }) => {
           Search
         </button>
       </form>
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          duration: 2500,
+          removeDelay: 1000,
+        }}
+      />
     </header>
   );
 };
