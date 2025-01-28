@@ -1,0 +1,19 @@
+.imgContainer {
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out;
+}
+
+.imgContainer:hover {
+  transform: scale(1.05);
+}
+
+.img {
+  object-fit: cover;
+  height: 100%;
+}
+
+@media screen and (min-width: 360px) {
+  .imgContainer {
+    height: 360px;
+  }
+}
